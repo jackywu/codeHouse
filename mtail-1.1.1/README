@@ -1,0 +1,46 @@
+mtail-1.1.1
+
+by matt hellige (matt@immute.net)
+
+this is a file tailer with color support, written in python. it has a
+modest home page at 'http://matt.immute.net/src/mtail'.
+
+this is the 1.1 release. there are several bugfixes, but the main reason for
+this release is to add support for the tailing of multiple files.  this README
+will be expanded in future versions, and there are a few other features i'd
+like to add, but i'm not planning on going overboard: i believe in small tools
+for small jobs.
+
+mtail now requires thread support from python. please let me know if this
+is inconvenient and i can add support for a single-file, non-threaded 
+mode.
+
+i've used mtail with a few patchlevels/builds of python 1.5--2.1.  there may
+still be issues with particular versions or builds, so please let me know i
+you think you've found something. also, of course, please let me know if you
+find bugs, fix bugs, or make any other improvements, and there's a good chance
+they'll end up in a future release (with acknowledgements, of course).
+
+please see the usage ("mtail -?") for details. the config file format is
+described in mtailrc.sample, which you should copy to ~/.mtailrc (on 
+windows, call the file .mtailrc and place it in a directory referred to by
+%HOME%). some additional info may be gotten from comments in the script
+itself. 
+
+mtail is derived in small part from colortail-0.3.0 by joakim andersson 
+(pt98jan@student.hk-r.se). it is an improvement on that work in several
+areas:
+  - it is roughly 500 lines of code, rather than roughly 3500.
+  - it does not dump core when it encounters long lines.
+  - the regexp matching process is simpler and, in my opinion, more intuitive,
+    as is the config file format.
+  - there is only one config file, which contains coloring rules for an 
+    arbitrary number of files.
+  - my coloring algorithm only generates escape codes when the color actually
+    needs changing, rather than around every single character.
+  - by virtue of being written in python, it is less platform-dependent.
+  - i support pre-coloring filters.
+
+
+please see the file LICENSE for copyright details and so on...
+share and enjoy!
