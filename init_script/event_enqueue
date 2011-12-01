@@ -1,0 +1,87 @@
+#! /bin/sh
+#
+# chkconfig: - 55 45
+# description: This script starts and stops the event_enqueue_httpd daemon
+# processname: event_enqueue_httpd
+# config: 
+# pidfile: 
+
+# Standard LSB functions
+#. /lib/lsb/init-functions
+
+# Source function library.
+. /etc/init.d/functions
+
+# Check that networking is up.
+. /etc/sysconfig/network
+
+if [ "$NETWORKING" = "no" ]
+then
+    exit 0
+fi
+
+python="python26"
+event_enqueue="/usr/local/event_enqueue/event_enqueue_httpd.py"
+prog=$(basename $event_enqueue)
+lockfile="/var/lock/subsys/event_enqueue"
+logfile="/data0/log/event_enqueue/event_enqueue.log"
+errorlog="${logfile%/*}/error.log"
+pidfile="/var/run/event_enqueue.pid"
+RETVAL=0
+
+function get_ip () {
+    local ip
+    ip=$(ifconfig $1 | grep "inet addr" | awk -F: '{print $2}' | awk '{print $1}') 
+    echo $ip
+}
+
+
+start () {
+    echo -n $"Starting $prog: "
+    command="$python $event_enqueue --host=$(get_ip eth1) --port=8888 \
+    --log_file_max_size=1073741824 --log_file_num_backups=30 --logging=info \
+    --log_file_prefix=$logfile 1>$errorlog 2>&1 " 
+    daemon $command
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && touch $lockfile
+}
+
+stop () {
+    echo -n $"Stopping $prog: "
+    killproc -p $pidfile $prog
+    RETVAL=$?
+    echo
+    if [ $RETVAL -eq 0 ] ; then
+        rm -f $lockfile
+        rm -f $pidfile
+    fi
+}
+
+restart () {
+        stop
+        start
+}
+
+
+# See how we were called.
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  status)
+    status -p $pidfile $prog
+    ;;
+  restart|reload|force-reload)
+    restart
+    ;;
+  *)
+    echo $"Usage: $0 {start|stop|status|restart|reload|force-reload}"
+    exit 1
+esac
+
+exit $?
+
